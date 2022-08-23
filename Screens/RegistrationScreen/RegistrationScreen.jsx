@@ -12,18 +12,47 @@ import {
 } from "react-native";
 import { useState } from "react";
 
+const initialState = {
+  login: "",
+  email: "",
+  password: "",
+};
+
 const RegistrationScreen = () => {
   const [isShownKeyboard, setIsShownKeyboard] = useState(false);
+  const [state, setState] = useState(initialState);
 
   const keyboardHide = () => {
+    if ("on submit") {
+      setIsShownKeyboard(false);
+      Keyboard.dismiss();
+    }
+  };
+
+  const hideKeyboard = () => {
     setIsShownKeyboard(false);
     Keyboard.dismiss();
   };
 
+  const onSubmit = () => {
+    console.log(state);
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={{ ...styles.form, marginBottom: isShownKeyboard ? 90 : 0 }}>
-        <View style={styles.pictureWrapper}>
+    <TouchableWithoutFeedback onPress={hideKeyboard}>
+      <View
+        style={{
+          ...styles.form,
+          paddingTop: isShownKeyboard ? 30 : 92,
+          paddingBottom: isShownKeyboard ? 160 : 60,
+        }}
+      >
+        <View
+          style={{
+            ...styles.pictureWrapper,
+            display: isShownKeyboard ? "none" : "flex",
+          }}
+        >
           <Image
             style={styles.picture}
             source={require("../../assets/images/placeholder.png")}
@@ -41,14 +70,24 @@ const RegistrationScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="Логин"
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, login: value }))
+              }
+              value={state.login}
               onFocus={() => setIsShownKeyboard(true)}
+              onSubmitEditing={keyboardHide}
             />
           </View>
           <View style={{ marginTop: 16 }}>
             <TextInput
               style={styles.input}
               placeholder="Адрес электронной почты"
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, email: value }))
+              }
+              value={state.email}
               onFocus={() => setIsShownKeyboard(true)}
+              onSubmitEditing={keyboardHide}
             />
           </View>
           <View style={{ marginTop: 16, position: "relative" }}>
@@ -56,7 +95,12 @@ const RegistrationScreen = () => {
               style={styles.inputPass}
               placeholder="Пароль"
               secureTextEntry={true}
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, password: value }))
+              }
+              value={state.password}
               onFocus={() => setIsShownKeyboard(true)}
+              onSubmitEditing={keyboardHide}
             />
             <View style={{ position: "absolute", top: 0, right: 16 }}>
               <TouchableOpacity activeOpacity={0.8} style={styles.secondaryBtn}>
@@ -65,8 +109,12 @@ const RegistrationScreen = () => {
             </View>
           </View>
         </View>
-        <TouchableOpacity activeOpacity={0.8} style={styles.submitBtn}>
-          <Text>Зарегистрироваться</Text>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.submitBtn}
+          onPress={onSubmit}
+        >
+          <Text style={styles.submitBtnText}>Зарегистрироваться</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondaryBtn}>
           <Text activeOpacity={0.8} style={styles.secondaryBtnText}>
@@ -82,10 +130,8 @@ const styles = StyleSheet.create({
   form: {
     position: "relative",
     width: 375,
-    paddingTop: 92,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingBottom: 50,
     backgroundColor: "#ffffff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -136,11 +182,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 100,
   },
+  submitBtnText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#ffffff",
+  },
   secondaryBtn: {
     marginTop: 16,
     borderColor: "transparent",
   },
   secondaryBtnText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
     textAlign: "center",
     color: "#1B4371",
   },

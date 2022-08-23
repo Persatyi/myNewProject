@@ -3,26 +3,42 @@ import {
   TextInput,
   View,
   Text,
-  Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  Platform,
-  KeyboardAvoidingView,
 } from "react-native";
 import { useState } from "react";
 
+const initialValue = {
+  email: "",
+  password: "",
+};
+
 const LoginScreen = () => {
   const [isShownKeyboard, setIsShownKeyboard] = useState(false);
+  const [state, setState] = useState(initialValue);
 
   const keyboardHide = () => {
+    if ("on submit") {
+      setIsShownKeyboard(false);
+      Keyboard.dismiss();
+    }
+  };
+
+  const hideKeyboard = () => {
     setIsShownKeyboard(false);
     Keyboard.dismiss();
   };
 
+  const onSubmit = () => {
+    console.log(state);
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
-      <View style={{ ...styles.form, marginBottom: isShownKeyboard ? 20 : 0 }}>
+    <TouchableWithoutFeedback onPress={hideKeyboard}>
+      <View
+        style={{ ...styles.form, paddingBottom: isShownKeyboard ? 160 : 60 }}
+      >
         <Text style={styles.title}>Войти</Text>
         <View style={styles.inputWrapper}>
           <View style={{ marginTop: 16 }}>
@@ -30,6 +46,11 @@ const LoginScreen = () => {
               style={styles.input}
               placeholder="Адрес электронной почты"
               onFocus={() => setIsShownKeyboard(true)}
+              onSubmitEditing={keyboardHide}
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, email: value }))
+              }
+              value={state.email}
             />
           </View>
           <View style={{ marginTop: 16, position: "relative" }}>
@@ -38,6 +59,11 @@ const LoginScreen = () => {
               placeholder="Пароль"
               secureTextEntry={true}
               onFocus={() => setIsShownKeyboard(true)}
+              onSubmitEditing={keyboardHide}
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, password: value }))
+              }
+              value={state.password}
             />
             <View style={{ position: "absolute", top: 0, right: 16 }}>
               <TouchableOpacity activeOpacity={0.8} style={styles.secondaryBtn}>
@@ -47,7 +73,9 @@ const LoginScreen = () => {
           </View>
         </View>
         <TouchableOpacity activeOpacity={0.8} style={styles.submitBtn}>
-          <Text>Войти</Text>
+          <Text style={styles.submitBtnText} onPress={onSubmit}>
+            Войти
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.secondaryBtn}>
           <Text activeOpacity={0.8} style={styles.secondaryBtnText}>
@@ -63,10 +91,9 @@ const styles = StyleSheet.create({
   form: {
     position: "relative",
     width: 375,
-    paddingTop: 92,
+    paddingTop: 32,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingBottom: 140,
     backgroundColor: "#ffffff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -108,11 +135,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 100,
   },
+  submitBtnText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#ffffff",
+  },
   secondaryBtn: {
     marginTop: 16,
     borderColor: "transparent",
   },
   secondaryBtnText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
     textAlign: "center",
     color: "#1B4371",
   },
