@@ -1,19 +1,16 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  View,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 import { useState, useEffect, useCallback } from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
 
 import RegistrationScreen from "./Screens/RegistrationScreen/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen/LoginScreen";
 
 SplashScreen.preventAutoHideAsync();
+const AuthStack = createStackNavigator();
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -53,16 +50,23 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <StatusBar />
-      <ImageBackground
-        style={styles.image}
-        source={require("./assets/images/bgPhoto.jpg")}
-      >
-        {/* <RegistrationScreen /> */}
-        <LoginScreen />
-      </ImageBackground>
-    </View>
+    <NavigationContainer>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <StatusBar />
+        <AuthStack.Navigator>
+          <AuthStack.Screen
+            options={{ headerShown: false }}
+            name="Register"
+            component={RegistrationScreen}
+          />
+          <AuthStack.Screen
+            options={{ headerShown: false }}
+            name="Login"
+            component={LoginScreen}
+          />
+        </AuthStack.Navigator>
+      </View>
+    </NavigationContainer>
   );
 }
 
@@ -70,12 +74,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  image: {
-    flex: 1,
-    resizeMode: "contain",
-    justifyContent: "flex-end",
+    // alignItems: "center",
+    // justifyContent: "center",
   },
 });

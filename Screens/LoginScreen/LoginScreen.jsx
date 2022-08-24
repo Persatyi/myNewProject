@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
+  ImageBackground,
 } from "react-native";
 import { useState } from "react";
 
@@ -14,7 +15,7 @@ const initialValue = {
   password: "",
 };
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [isShownKeyboard, setIsShownKeyboard] = useState(false);
   const [state, setState] = useState(initialValue);
 
@@ -35,59 +36,75 @@ const LoginScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={hideKeyboard}>
-      <View
-        style={{ ...styles.form, paddingBottom: isShownKeyboard ? 160 : 60 }}
-      >
-        <Text style={styles.title}>Войти</Text>
-        <View style={styles.inputWrapper}>
-          <View style={{ marginTop: 16 }}>
-            <TextInput
-              style={styles.input}
-              placeholder="Адрес электронной почты"
-              onFocus={() => setIsShownKeyboard(true)}
-              onSubmitEditing={keyboardHide}
-              onChangeText={(value) =>
-                setState((prevState) => ({ ...prevState, email: value }))
-              }
-              value={state.email}
-            />
-          </View>
-          <View style={{ marginTop: 16, position: "relative" }}>
-            <TextInput
-              style={styles.inputPass}
-              placeholder="Пароль"
-              secureTextEntry={true}
-              onFocus={() => setIsShownKeyboard(true)}
-              onSubmitEditing={keyboardHide}
-              onChangeText={(value) =>
-                setState((prevState) => ({ ...prevState, password: value }))
-              }
-              value={state.password}
-            />
-            <View style={{ position: "absolute", top: 0, right: 16 }}>
-              <TouchableOpacity activeOpacity={0.8} style={styles.secondaryBtn}>
-                <Text style={styles.secondaryBtnText}>Показать</Text>
-              </TouchableOpacity>
+    <ImageBackground
+      style={styles.image}
+      source={require("../../assets/images/bgPhoto.jpg")}
+    >
+      <TouchableWithoutFeedback onPress={hideKeyboard}>
+        <View
+          style={{ ...styles.form, paddingBottom: isShownKeyboard ? 160 : 60 }}
+        >
+          <Text style={styles.title}>Войти</Text>
+          <View style={styles.inputWrapper}>
+            <View style={{ marginTop: 16 }}>
+              <TextInput
+                style={styles.input}
+                placeholder="Адрес электронной почты"
+                onFocus={() => setIsShownKeyboard(true)}
+                onSubmitEditing={keyboardHide}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, email: value }))
+                }
+                value={state.email}
+              />
+            </View>
+            <View style={{ marginTop: 16, position: "relative" }}>
+              <TextInput
+                style={styles.inputPass}
+                placeholder="Пароль"
+                secureTextEntry={true}
+                onFocus={() => setIsShownKeyboard(true)}
+                onSubmitEditing={keyboardHide}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, password: value }))
+                }
+                value={state.password}
+              />
+              <View style={{ position: "absolute", top: 0, right: 16 }}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.secondaryBtn}
+                >
+                  <Text style={styles.secondaryBtnText}>Показать</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
+          <TouchableOpacity activeOpacity={0.8} style={styles.submitBtn}>
+            <Text style={styles.submitBtnText} onPress={onSubmit}>
+              Войти
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Register")}
+            style={styles.secondaryBtn}
+          >
+            <Text activeOpacity={0.8} style={styles.secondaryBtnText}>
+              Нет аккаунта? Зарегистрироваться
+            </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity activeOpacity={0.8} style={styles.submitBtn}>
-          <Text style={styles.submitBtnText} onPress={onSubmit}>
-            Войти
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryBtn}>
-          <Text activeOpacity={0.8} style={styles.secondaryBtnText}>
-            Нет аккаунта? Зарегистрироваться
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    resizeMode: "contain",
+    justifyContent: "flex-end",
+  },
   form: {
     position: "relative",
     width: 375,
