@@ -8,6 +8,8 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import RegistrationScreen from "./Screens/RegistrationScreen/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen/LoginScreen";
+import PostsScreen from "./Screens/PostsScreen/PostsScreen";
+import CreatePostsScreen from "./Screens/CreatePostsScreen/CreatePostsScreen";
 
 SplashScreen.preventAutoHideAsync();
 const AuthStack = createStackNavigator();
@@ -53,7 +55,7 @@ export default function App() {
     <NavigationContainer>
       <View style={styles.container} onLayout={onLayoutRootView}>
         <StatusBar />
-        <AuthStack.Navigator>
+        {/* <AuthStack.Navigator>
           <AuthStack.Screen
             options={{ headerShown: false }}
             name="Register"
@@ -64,7 +66,9 @@ export default function App() {
             name="Login"
             component={LoginScreen}
           />
-        </AuthStack.Navigator>
+        </AuthStack.Navigator> */}
+        {/* <PostsScreen /> */}
+        <CreatePostsScreen />
       </View>
     </NavigationContainer>
   );
