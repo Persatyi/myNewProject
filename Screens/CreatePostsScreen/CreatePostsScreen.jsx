@@ -1,4 +1,13 @@
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 
 const CreatePostsScreen = () => {
   return (
@@ -12,39 +21,44 @@ const CreatePostsScreen = () => {
           <Image source={require("../../assets/images/arrow-left.png")} />
         </TouchableOpacity>
       </View>
-      <View style={styles.mainContent}>
-        <View style={styles.photoWrapper}>
-          <Image
-            source={require("../../assets/images/Photo-placeholder.png")}
-            style={styles.photo}
-          />
-          <Image
-            source={require("../../assets/images/Camera.png")}
-            style={styles.camera}
-          />
-        </View>
-        <View>
-          <Text style={styles.photoDownload}>Загрузите фото</Text>
-        </View>
-      </View>
+      <SafeAreaView style={styles.mainContent}>
+        <ScrollView>
+          <View style={styles.photoWrapper}>
+            <Image
+              source={require("../../assets/images/Photo-placeholder.png")}
+              style={styles.photo}
+            />
+            <Image
+              source={require("../../assets/images/Camera.png")}
+              style={styles.camera}
+            />
+          </View>
+          <View>
+            <Text style={styles.photoDownload}>Загрузите фото</Text>
+          </View>
+          <View style={styles.photoNameWrapper}>
+            <TextInput style={styles.photoName} placeholder="Название..." />
+          </View>
+          <View style={styles.locationWrapper}>
+            <TextInput style={styles.location} placeholder="Местность..." />
+            <Image
+              source={require("../../assets/images/map-pin.png")}
+              style={styles.map}
+            />
+          </View>
+          <TouchableOpacity activeOpacity={0.8} style={styles.createBtn}>
+            <Text style={styles.createBtnText}>Опубликовать</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+
       <View style={styles.navigationContainer}>
-        <View style={styles.menuWrapper}>
-          <TouchableOpacity activeOpacity={0.8}>
-            <Image
-              style={styles.menu}
-              source={require("../../assets/images/grid.png")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} style={styles.add}>
-            <Text style={styles.addText}>+</Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8}>
-            <Image
-              style={styles.user}
-              source={require("../../assets/images/user.png")}
-            />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity activeOpacity={0.8} style={styles.remove}>
+          <Image
+            style={styles.trashBox}
+            source={require("../../assets/images/trash-box.png")}
+          />
+        </TouchableOpacity>
       </View>
     </>
   );
@@ -69,13 +83,12 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 2,
-    paddingRight: 16,
-    paddingLeft: 16,
   },
   photoWrapper: {
     position: "relative",
     alignItems: "center",
     paddingTop: 32,
+    marginHorizontal: 16,
   },
   photo: {
     backgroundColor: "#F6F6F6",
@@ -97,6 +110,53 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     color: "#BDBDBD",
+    marginHorizontal: 16,
+  },
+  photoNameWrapper: {
+    marginTop: 40,
+    marginHorizontal: 16,
+  },
+  photoName: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#BDBDBD",
+    paddingBottom: 15,
+    borderBottomColor: "#E8E8E8",
+    borderBottomWidth: 1,
+  },
+  locationWrapper: {
+    position: "relative",
+    marginTop: 30,
+    marginHorizontal: 16,
+  },
+  map: {
+    position: "absolute",
+    bottom: 15,
+    left: 0,
+  },
+  location: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#BDBDBD",
+    paddingBottom: 15,
+    paddingLeft: 28,
+    borderBottomColor: "#E8E8E8",
+    borderBottomWidth: 1,
+  },
+  createBtn: {
+    marginTop: 43,
+    height: 51,
+    backgroundColor: "#FF6C00",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 100,
+    marginHorizontal: 16,
+    marginBottom: 20,
+  },
+  createBtnText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#ffffff",
   },
   navigationContainer: {
     position: "relative",
@@ -104,34 +164,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#ffffff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0.5 },
-    shadowOpacity: 0.2,
   },
-  menuWrapper: {
-    flexDirection: "row",
+  remove: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  menu: {
-    width: 24,
-    height: 24,
-  },
-  add: {
-    marginHorizontal: 43,
     width: 70,
-    height: 51,
-    backgroundColor: "#FF6C00",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 100,
+    height: 40,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 20,
   },
-  addText: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    color: "#ffffff",
-  },
-  user: {
+  trashBox: {
     width: 24,
     height: 24,
   },
