@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   return (
     <ImageBackground
       style={styles.image}
@@ -67,19 +67,31 @@ const ProfileScreen = () => {
       </SafeAreaView>
       <View style={styles.navigationContainer}>
         <View style={styles.menuWrapper}>
-          <TouchableOpacity activeOpacity={0.8}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Posts")}
+            activeOpacity={0.8}
+          >
             <Image
               style={styles.menu}
               source={require("../../assets/images/grid.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} style={styles.add}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            activeOpacity={0.8}
+            style={styles.add}
+          >
             <Image
               style={styles.user}
               source={require("../../assets/images/userWhite.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("CreatePosts", { screen: "Profile" })
+            }
+            activeOpacity={0.8}
+          >
             <Text style={styles.addText}>+</Text>
           </TouchableOpacity>
         </View>

@@ -1,5 +1,4 @@
 import React from "react";
-import { Image } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -34,28 +33,48 @@ export const useRoute = (isAuth) => {
   return (
     <MainTab.Navigator>
       <MainTab.Screen
-        options={{
+        options={() => ({
+          tabBarStyle: {
+            display: "none",
+          },
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarIcon: ({ focused, size, color }) => (
-            <Image
-              //   style={styles.menu}
-              source={require("./assets/images/grid.png")}
-            />
-          ),
-        }}
+        })}
         name="Posts"
         component={PostsScreen}
       />
       <MainTab.Screen
-        options={{ headerShown: false }}
+        options={() => ({
+          tabBarStyle: {
+            display: "none",
+          },
+          headerShown: false,
+          tabBarShowLabel: false,
+        })}
         name="CreatePosts"
         component={CreatePostsScreen}
       />
       <MainTab.Screen
-        options={{ headerShown: false }}
         name="Profile"
         component={ProfileScreen}
+        options={() => ({
+          tabBarStyle: {
+            display: "none",
+          },
+          headerShown: false,
+          tabBarShowLabel: false,
+        })}
+      />
+      <MainTab.Screen
+        name="Comments"
+        component={CommentsScreen}
+        options={() => ({
+          tabBarStyle: {
+            display: "none",
+          },
+          headerShown: false,
+          tabBarShowLabel: false,
+        })}
       />
     </MainTab.Navigator>
   );

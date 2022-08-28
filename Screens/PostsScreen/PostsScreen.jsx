@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 
-const PostsScreen = () => {
+const PostsScreen = ({ navigation }) => {
   return (
     <>
       <View style={styles.headerContainer}>
@@ -59,16 +59,28 @@ const PostsScreen = () => {
       </SafeAreaView>
       <View style={styles.navigationContainer}>
         <View style={styles.menuWrapper}>
-          <TouchableOpacity activeOpacity={0.8}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Posts")}
+            activeOpacity={0.8}
+          >
             <Image
               style={styles.menu}
               source={require("../../assets/images/grid.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8} style={styles.add}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("CreatePosts", { screen: "Posts" })
+            }
+            activeOpacity={0.8}
+            style={styles.add}
+          >
             <Text style={styles.addText}>+</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.8}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            activeOpacity={0.8}
+          >
             <Image
               style={styles.user}
               source={require("../../assets/images/user.png")}

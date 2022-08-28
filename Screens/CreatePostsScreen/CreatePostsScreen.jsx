@@ -9,12 +9,15 @@ import {
   ScrollView,
 } from "react-native";
 
-const CreatePostsScreen = () => {
+const CreatePostsScreen = ({ navigation, route }) => {
+  const { screen } = route.params;
+
   return (
     <>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Создать публикацию</Text>
         <TouchableOpacity
+          onPress={() => navigation.navigate(`${screen}`)}
           activeOpacity={0.8}
           style={{ position: "absolute", bottom: 8, left: 20 }}
         >
