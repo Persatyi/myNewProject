@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,10 +8,90 @@ import {
   TextInput,
   SafeAreaView,
   ScrollView,
+  Keyboard,
 } from "react-native";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import * as Location from "expo-location";
+
+const initialValue = {
+  name: "",
+  locationName: "",
+  latitude: "",
+  longitude: "",
+};
 
 const CreatePostsScreen = ({ navigation, route }) => {
   const { screen } = route.params;
+  const [state, setState] = useState(initialValue);
+  const [isShownKeyboard, setIsShownKeyboard] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [camera, setCamera] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [photo, setPhoto] = useState("");
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const keyboardHide = () => {
+    if ("on submit") {
+      setIsShownKeyboard(false);
+      Keyboard.dismiss();
+    }
+  };
+
+  const hideKeyboard = () => {
+    setIsShownKeyboard(false);
+    Keyboard.dismiss();
+  };
+
+  const takePhoto = async () => {
+    const photo = await camera.takePictureAsync();
+
+    const location = await Location.getCurrentPositionAsync();
+    setPhoto(photo.uri);
+    setState((prevState) => ({
+      ...prevState,
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    }));
+  };
+
+  const sendPhoto = async () => {
+    navigation.navigate("DefaultScreen", {
+      photo,
+      name: state.name,
+      locationName: state.locationName,
+      latitude: state.latitude,
+      longitude: state.longitude,
+    });
+    setState(initialValue);
+    setPhoto("");
+  };
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+
+      setHasPermission(status === "granted");
+    })();
+  });
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
 
   return (
     <>
@@ -24,39 +105,75 @@ const CreatePostsScreen = ({ navigation, route }) => {
           <Image source={require("../../assets/images/arrow-left.png")} />
         </TouchableOpacity>
       </View>
-      <SafeAreaView style={styles.mainContent}>
+      <SafeAreaView style={styles.mainContent} onPress={hideKeyboard}>
         <ScrollView>
           <View style={styles.photoWrapper}>
-            <Image
-              source={require("../../assets/images/Photo-placeholder.png")}
-              style={styles.photo}
-            />
-            <Image
-              source={require("../../assets/images/Camera.png")}
-              style={styles.camera}
-            />
+            {photo && (
+              <View style={styles.takePhotoContainer}>
+                <Image
+                  source={{ uri: photo }}
+                  style={{ width: 343, height: 240, borderRadius: 8 }}
+                />
+              </View>
+            )}
+            <Camera style={styles.camera} type={type} ref={setCamera} />
+            <TouchableOpacity
+              onPress={takePhoto}
+              style={styles.cameraBtn}
+              activeOpacity={0.8}
+            >
+              <Image source={require("../../assets/images/Camera.png")} />
+            </TouchableOpacity>
           </View>
           <View>
             <Text style={styles.photoDownload}>Загрузите фото</Text>
           </View>
           <View style={styles.photoNameWrapper}>
-            <TextInput style={styles.photoName} placeholder="Название..." />
+            <TextInput
+              style={styles.photoName}
+              onFocus={() => setIsShownKeyboard(true)}
+              onSubmitEditing={keyboardHide}
+              clearButtonMode="always"
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, name: value }))
+              }
+              placeholder="Название..."
+            />
           </View>
           <View style={styles.locationWrapper}>
-            <TextInput style={styles.location} placeholder="Местность..." />
+            <TextInput
+              style={styles.location}
+              onFocus={() => setIsShownKeyboard(true)}
+              clearButtonMode="always"
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, locationName: value }))
+              }
+              placeholder="Местность..."
+            />
             <Image
               source={require("../../assets/images/map-pin.png")}
               style={styles.map}
             />
           </View>
-          <TouchableOpacity activeOpacity={0.8} style={styles.createBtn}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={sendPhoto}
+            style={{
+              ...styles.createBtn,
+              marginBottom: isShownKeyboard ? 100 : 20,
+            }}
+          >
             <Text style={styles.createBtnText}>Опубликовать</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
 
       <View style={styles.navigationContainer}>
-        <TouchableOpacity activeOpacity={0.8} style={styles.remove}>
+        <TouchableOpacity
+          onPress={() => setPhoto("")}
+          activeOpacity={0.8}
+          style={styles.remove}
+        >
           <Image
             style={styles.trashBox}
             source={require("../../assets/images/trash-box.png")}
@@ -90,23 +207,33 @@ const styles = StyleSheet.create({
   photoWrapper: {
     position: "relative",
     alignItems: "center",
-    paddingTop: 32,
-    marginHorizontal: 16,
-  },
-  photo: {
     backgroundColor: "#F6F6F6",
     borderWidth: 1,
     borderColor: "#E8E8E8",
+    borderRadius: 8,
+    marginTop: 32,
+    marginHorizontal: 16,
+  },
+  takePhotoContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 100,
+  },
+  camera: {
     width: 343,
     height: 240,
     borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#F6F6F6",
   },
-  camera: {
+  cameraBtn: {
     position: "absolute",
-    top: 120,
+    top: 90,
     left: 140,
     width: 60,
     height: 60,
+    zIndex: 200,
   },
   photoDownload: {
     marginTop: 8,
@@ -154,7 +281,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 100,
     marginHorizontal: 16,
-    marginBottom: 20,
   },
   createBtnText: {
     fontFamily: "Roboto-Regular",

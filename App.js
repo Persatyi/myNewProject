@@ -5,7 +5,7 @@ import * as Font from "expo-font";
 import { useState, useEffect, useCallback } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 
-import { useRoute } from "./router";
+import { useRoute } from "./Router/router";
 
 SplashScreen.preventAutoHideAsync();
 

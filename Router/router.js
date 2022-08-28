@@ -6,12 +6,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 const AuthStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 
-import RegistrationScreen from "./Screens/RegistrationScreen/RegistrationScreen";
-import LoginScreen from "./Screens/LoginScreen/LoginScreen";
-import PostsScreen from "./Screens/PostsScreen/PostsScreen";
-import CreatePostsScreen from "./Screens/CreatePostsScreen/CreatePostsScreen";
-import CommentsScreen from "./Screens/CommentsScreen/CommentsScreen";
-import ProfileScreen from "./Screens/ProfileScreen/ProfileScreen";
+import RegistrationScreen from "../Screens/RegistrationScreen/RegistrationScreen";
+import LoginScreen from "../Screens/LoginScreen/LoginScreen";
+import PostsScreen from "../Screens/PostsScreen/PostsScreen";
+import CreatePostsScreen from "../Screens/CreatePostsScreen/CreatePostsScreen";
+import ProfileScreen from "../Screens/ProfileScreen/ProfileScreen";
 
 export const useRoute = (isAuth) => {
   if (!isAuth) {
@@ -57,17 +56,6 @@ export const useRoute = (isAuth) => {
       <MainTab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={() => ({
-          tabBarStyle: {
-            display: "none",
-          },
-          headerShown: false,
-          tabBarShowLabel: false,
-        })}
-      />
-      <MainTab.Screen
-        name="Comments"
-        component={CommentsScreen}
         options={() => ({
           tabBarStyle: {
             display: "none",

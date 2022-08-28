@@ -7,31 +7,49 @@ import {
   TextInput,
   SafeAreaView,
   ScrollView,
+  Keyboard,
 } from "react-native";
+import { useState } from "react";
 
-const CommentsScreen = () => {
+const CommentsScreen = ({ navigation, route }) => {
+  const { screen } = route.params;
+  const [isShownKeyboard, setIsShownKeyboard] = useState(false);
+
+  const hideKeyboard = () => {
+    setIsShownKeyboard(false);
+    Keyboard.dismiss();
+  };
+
+  const keyboardHide = () => {
+    if ("on submit") {
+      setIsShownKeyboard(false);
+      Keyboard.dismiss();
+    }
+  };
+
   return (
     <>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Комментарии</Text>
         <TouchableOpacity
+          onPress={() => navigation.navigate(`${screen}`)}
           activeOpacity={0.8}
           style={{ position: "absolute", bottom: 8, left: 20 }}
         >
-          <Image source={require("../../assets/images/arrow-left.png")} />
+          <Image source={require("../../../assets/images/arrow-left.png")} />
         </TouchableOpacity>
       </View>
       <SafeAreaView style={styles.mainContent}>
         <ScrollView>
           <View style={styles.photoWrapper}>
             <Image
-              source={require("../../assets/images/Forest.png")}
+              source={require("../../../assets/images/Forest.png")}
               style={styles.photo}
             />
           </View>
           <View style={styles.commentWrapper}>
             <Image
-              source={require("../../assets/images/user1.png")}
+              source={require("../../../assets/images/user1.png")}
               style={styles.userLogo}
             />
             <View style={styles.textContainer}>
@@ -51,22 +69,30 @@ const CommentsScreen = () => {
               <Text style={styles.answerDate}>09 июня, 2020 | 09:14</Text>
             </View>
             <Image
-              source={require("../../assets/images/user2.png")}
+              source={require("../../../assets/images/user2.png")}
               style={styles.ownerLogo}
             />
           </View>
         </ScrollView>
       </SafeAreaView>
 
-      <View style={styles.navigationContainer}>
+      <View
+        style={{
+          ...styles.navigationContainer,
+          marginBottom: isShownKeyboard ? 250 : 0,
+        }}
+      >
         <TextInput
           placeholder="Комментировать..."
           style={styles.commentInput}
+          onFocus={() => setIsShownKeyboard(true)}
+          onSubmitEditing={keyboardHide}
+          onBlur={hideKeyboard}
         />
         <TouchableOpacity activeOpacity={0.8} style={styles.commentBtn}>
           <Image
             style={styles.trashBox}
-            source={require("../../assets/images/arrowUp.png")}
+            source={require("../../../assets/images/arrowUp.png")}
           />
         </TouchableOpacity>
       </View>
