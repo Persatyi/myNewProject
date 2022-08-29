@@ -33,7 +33,6 @@ const DefaultScreenPosts = ({ navigation, route }) => {
     getAllPosts();
   }, []);
 
-  console.log("🚀 ~ posts", posts);
   return (
     <>
       <View style={styles.headerContainer}>

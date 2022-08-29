@@ -37,7 +37,6 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const onSubmit = () => {
-    console.log(state);
     dispatch(authSignInUser(state));
     setState(initialValue);
   };
