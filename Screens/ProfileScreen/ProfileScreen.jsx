@@ -18,7 +18,7 @@ const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
 
-  const { userId } = useSelector((state) => state.auth);
+  const { userId, nickname } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUserPosts();
@@ -68,9 +68,7 @@ const ProfileScreen = ({ navigation }) => {
               >
                 <Image source={require("../../assets/images/log-out.png")} />
               </TouchableOpacity>
-              <Text style={styles.ownerName}>
-                {userPosts.length === 0 ? "Name" : userPosts[0].nickname}
-              </Text>
+              <Text style={styles.ownerName}>{nickname}</Text>
             </View>
           )}
           data={userPosts}
