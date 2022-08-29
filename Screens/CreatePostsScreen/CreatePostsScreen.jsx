@@ -13,6 +13,9 @@ import {
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
+import { useSelector } from "react-redux";
+
+import db from "../../firebase/config";
 
 const initialValue = {
   name: "",
@@ -30,6 +33,8 @@ const CreatePostsScreen = ({ navigation, route }) => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [photo, setPhoto] = useState("");
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const { userId, nickname } = useSelector((state) => state.auth);
 
   const keyboardHide = () => {
     if ("on submit") {
@@ -55,14 +60,34 @@ const CreatePostsScreen = ({ navigation, route }) => {
     }));
   };
 
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    await db.storage().ref(`postImage/${uniquePostId}`).put(file);
+
+    const processedPhoto = await db
+      .storage()
+      .ref("postImage")
+      .child(uniquePostId)
+      .getDownloadURL();
+
+    return processedPhoto;
+  };
+
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    await db
+      .firestore()
+      .collection("posts")
+      .add({ ...state, photo, userId, nickname });
+  };
+
   const sendPhoto = async () => {
-    navigation.navigate("DefaultScreen", {
-      photo,
-      name: state.name,
-      locationName: state.locationName,
-      latitude: state.latitude,
-      longitude: state.longitude,
-    });
+    uploadPostToServer();
+    navigation.navigate("DefaultScreen");
     setState(initialValue);
     setPhoto("");
   };

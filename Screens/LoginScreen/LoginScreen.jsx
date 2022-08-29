@@ -9,6 +9,9 @@ import {
   ImageBackground,
 } from "react-native";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+
+import { authSignInUser } from "../../redux/auth/authOperations";
 
 const initialValue = {
   email: "",
@@ -18,6 +21,8 @@ const initialValue = {
 const LoginScreen = ({ navigation }) => {
   const [isShownKeyboard, setIsShownKeyboard] = useState(false);
   const [state, setState] = useState(initialValue);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     if ("on submit") {
@@ -33,6 +38,8 @@ const LoginScreen = ({ navigation }) => {
 
   const onSubmit = () => {
     console.log(state);
+    dispatch(authSignInUser(state));
+    setState(initialValue);
   };
 
   return (
@@ -80,10 +87,12 @@ const LoginScreen = ({ navigation }) => {
               </View>
             </View>
           </View>
-          <TouchableOpacity activeOpacity={0.8} style={styles.submitBtn}>
-            <Text style={styles.submitBtnText} onPress={onSubmit}>
-              Войти
-            </Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.submitBtn}
+            onPress={onSubmit}
+          >
+            <Text style={styles.submitBtnText}>Войти</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("Register")}

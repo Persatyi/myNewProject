@@ -6,14 +6,45 @@ import {
   Image,
   TextInput,
   SafeAreaView,
-  ScrollView,
+  FlatList,
   Keyboard,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
+import db from "../../../firebase/config";
 
 const CommentsScreen = ({ navigation, route }) => {
-  const { screen } = route.params;
+  const { screen, postId, photo } = route.params;
   const [isShownKeyboard, setIsShownKeyboard] = useState(false);
+  const [comment, setComment] = useState("");
+  const [allComments, setAllComments] = useState([]);
+  const { nickname } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const getAllPosts = async () => {
+    await db
+      .firestore()
+      .collection("posts")
+      .doc(postId)
+      .collection("comments")
+      .onSnapshot((data) =>
+        setAllComments(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      );
+  };
+
+  const createPost = () => {
+    db.firestore()
+      .collection("posts")
+      .doc(postId)
+      .collection("comments")
+      .add({ comment, nickname });
+    hideKeyboard();
+    setComment("");
+  };
 
   const hideKeyboard = () => {
     setIsShownKeyboard(false);
@@ -40,40 +71,41 @@ const CommentsScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       <SafeAreaView style={styles.mainContent}>
-        <ScrollView>
-          <View style={styles.photoWrapper}>
-            <Image
-              source={require("../../../assets/images/Forest.png")}
-              style={styles.photo}
-            />
-          </View>
-          <View style={styles.commentWrapper}>
-            <Image
-              source={require("../../../assets/images/user1.png")}
-              style={styles.userLogo}
-            />
-            <View style={styles.textContainer}>
-              <Text style={styles.textMessage}>
-                Really love your most recent photo. I’ve been trying to capture
-                the same thing for a few months and would love some tips!
-              </Text>
-              <Text style={styles.date}>09 июня, 2020 | 08:40</Text>
+        <FlatList
+          ListHeaderComponent={() => (
+            <View style={styles.photoWrapper}>
+              <Image source={{ uri: photo }} style={styles.photo} />
             </View>
-          </View>
-          <View style={styles.commentWrapper}>
-            <View style={styles.textContainer}>
-              <Text style={styles.textMessage}>
-                A fast 50mm like f1.8 would help with the bokeh. I’ve been using
-                primes as they tend to get a bit sharper images.
-              </Text>
-              <Text style={styles.answerDate}>09 июня, 2020 | 09:14</Text>
-            </View>
-            <Image
-              source={require("../../../assets/images/user2.png")}
-              style={styles.ownerLogo}
-            />
-          </View>
-        </ScrollView>
+          )}
+          data={allComments}
+          renderItem={({ item }) => (
+            <>
+              {item.nickname === nickname ? (
+                <View style={styles.commentWrapper}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.textMessage}>{item.comment}</Text>
+                    <Text style={styles.answerDate}>09 июня, 2020 | 09:14</Text>
+                  </View>
+                  <Image
+                    source={require("../../../assets/images/user2.png")}
+                    style={styles.ownerLogo}
+                  />
+                </View>
+              ) : (
+                <View style={styles.commentWrapper}>
+                  <Image
+                    source={require("../../../assets/images/user1.png")}
+                    style={styles.userLogo}
+                  />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.textMessage}>{item.comment}</Text>
+                    <Text style={styles.date}>09 июня, 2020 | 08:40</Text>
+                  </View>
+                </View>
+              )}
+            </>
+          )}
+        />
       </SafeAreaView>
 
       <View
@@ -88,8 +120,13 @@ const CommentsScreen = ({ navigation, route }) => {
           onFocus={() => setIsShownKeyboard(true)}
           onSubmitEditing={keyboardHide}
           onBlur={hideKeyboard}
+          onChangeText={setComment}
         />
-        <TouchableOpacity activeOpacity={0.8} style={styles.commentBtn}>
+        <TouchableOpacity
+          onPress={createPost}
+          activeOpacity={0.8}
+          style={styles.commentBtn}
+        >
           <Image
             style={styles.trashBox}
             source={require("../../../assets/images/arrowUp.png")}
@@ -188,7 +225,6 @@ const styles = StyleSheet.create({
     height: 83,
     justifyContent: "center",
     backgroundColor: "#ffffff",
-    marginHorizontal: 16,
   },
   commentInput: {
     height: 50,
@@ -201,17 +237,19 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Medium",
     color: "#BDBDBD",
     fontSize: 16,
+    marginHorizontal: 16,
   },
   commentBtn: {
     position: "absolute",
     top: 25,
-    right: 8,
+    right: 25,
     width: 34,
     height: 34,
     backgroundColor: "#FF6C00",
     borderRadius: 34,
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 100,
   },
 });
 

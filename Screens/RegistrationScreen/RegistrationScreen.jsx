@@ -8,10 +8,10 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
-  Platform,
-  KeyboardAvoidingView,
 } from "react-native";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../../redux/auth/authOperations";
 
 const initialState = {
   login: "",
@@ -22,6 +22,8 @@ const initialState = {
 const RegistrationScreen = ({ navigation }) => {
   const [isShownKeyboard, setIsShownKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     if ("on submit") {
@@ -36,7 +38,7 @@ const RegistrationScreen = ({ navigation }) => {
   };
 
   const onSubmit = () => {
-    console.log(state);
+    dispatch(authSignUpUser(state));
   };
 
   return (

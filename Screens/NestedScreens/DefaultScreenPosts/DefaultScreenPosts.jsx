@@ -7,21 +7,39 @@ import {
   Image,
   FlatList,
 } from "react-native";
+import { useDispatch } from "react-redux";
+
+import { authSignOutUser } from "../../../redux/auth/authOperations";
+import db from "../../../firebase/config";
 
 const DefaultScreenPosts = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
+
+  const getAllPosts = async () => {
+    await db
+      .firestore()
+      .collection("posts")
+      .onSnapshot((data) =>
+        setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      );
+  };
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPosts();
+  }, []);
 
+  console.log("🚀 ~ posts", posts);
   return (
     <>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Публикации</Text>
         <TouchableOpacity
+          onPress={signOut}
           activeOpacity={0.8}
           style={{ position: "absolute", top: 50, right: 20 }}
         >
@@ -59,6 +77,8 @@ const DefaultScreenPosts = ({ navigation, route }) => {
                   onPress={() =>
                     navigation.navigate("Comments", {
                       screen: "DefaultScreen",
+                      postId: item.id,
+                      photo: item.photo,
                     })
                   }
                 >

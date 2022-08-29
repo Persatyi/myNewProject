@@ -6,69 +6,130 @@ import {
   Image,
   ImageBackground,
   SafeAreaView,
-  ScrollView,
+  FlatList,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+
+import { authSignOutUser } from "../../redux/auth/authOperations";
+import db from "../../firebase/config";
 
 const ProfileScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const [userPosts, setUserPosts] = useState([]);
+
+  const { userId } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    getUserPosts();
+  }, []);
+
+  const getUserPosts = async () => {
+    await db
+      .firestore()
+      .collection("posts")
+      .where("userId", "==", userId)
+      .onSnapshot((data) =>
+        setUserPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      );
+  };
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   return (
     <ImageBackground
       style={styles.image}
       source={require("../../assets/images/bgPhoto.jpg")}
     >
       <SafeAreaView style={styles.mainContent}>
-        <ScrollView>
-          <View style={styles.headerContainer}>
-            <View style={styles.ownerPhotoWrapper}>
-              <Image
-                source={require("../../assets/images/profilePhoto.png")}
-                style={styles.ownerPhoto}
-              />
-              <TouchableOpacity style={styles.removePhoto} activeOpacity={0.8}>
+        <FlatList
+          ListHeaderComponent={() => (
+            <View style={styles.headerContainer}>
+              <View style={styles.ownerPhotoWrapper}>
                 <Image
-                  source={require("../../assets/images/removePhoto.png")}
+                  source={require("../../assets/images/profilePhoto.png")}
+                  style={styles.ownerPhoto}
                 />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              style={{ position: "absolute", top: 23, right: 20 }}
-            >
-              <Image source={require("../../assets/images/log-out.png")} />
-            </TouchableOpacity>
-            <Text style={styles.ownerName}>Natali Romanova</Text>
-            <View style={styles.postWrapper}>
-              <Image
-                style={styles.postImage}
-                source={require("../../assets/images/Forest.png")}
-              />
-              <Text style={styles.postImageName}>Лес</Text>
-              <View style={styles.postInfoWrapper}>
-                <Image
-                  style={styles.postInfoCommentsImg}
-                  source={require("../../assets/images/Shape.png")}
-                />
-                <Text style={styles.amountOfComments}>8</Text>
-                <Image
-                  style={styles.postLikeImg}
-                  source={require("../../assets/images/thumbs-up.png")}
-                />
-                <Text style={styles.amountOfComments}>153</Text>
-                <View style={styles.locationTextWrapper}>
+                <TouchableOpacity
+                  style={styles.removePhoto}
+                  activeOpacity={0.8}
+                >
                   <Image
-                    style={styles.locationImg}
-                    source={require("../../assets/images/map-pin.png")}
+                    source={require("../../assets/images/removePhoto.png")}
                   />
-                  <Text style={styles.locationText}>Ukraine</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                onPress={signOut}
+                activeOpacity={0.8}
+                style={{ position: "absolute", top: 23, right: 20 }}
+              >
+                <Image source={require("../../assets/images/log-out.png")} />
+              </TouchableOpacity>
+              <Text style={styles.ownerName}>
+                {userPosts.length === 0 ? "Name" : userPosts[0].nickname}
+              </Text>
+            </View>
+          )}
+          data={userPosts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <View style={styles.mainContentWrapper}>
+              <View style={styles.postWrapper}>
+                <Image style={styles.postImage} source={{ uri: item.photo }} />
+                <Text style={styles.postImageName}>{item.name}</Text>
+                <View style={styles.postInfoWrapper}>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() =>
+                      navigation.navigate("Comments", {
+                        postId: item.id,
+                        screen: "Profile",
+                        photo: item.photo,
+                      })
+                    }
+                  >
+                    <Image
+                      style={styles.postInfoCommentsImg}
+                      source={require("../../assets/images/Shape.png")}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.amountOfComments}>8</Text>
+                  <Image
+                    style={styles.postLikeImg}
+                    source={require("../../assets/images/thumbs-up.png")}
+                  />
+                  <Text style={styles.amountOfComments}>153</Text>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() =>
+                      navigation.navigate("Map", {
+                        longitude: item.longitude,
+                        latitude: item.latitude,
+                        screen: "Profile",
+                        locationName: item.locationName,
+                      })
+                    }
+                    style={styles.locationTextWrapper}
+                  >
+                    <Image
+                      style={styles.locationImg}
+                      source={require("../../assets/images/map-pin.png")}
+                    />
+                    <Text style={styles.locationText}>{item.locationName}</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
+          )}
+        />
       </SafeAreaView>
       <View style={styles.navigationContainer}>
         <View style={styles.menuWrapper}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Posts")}
+            onPress={() => navigation.navigate("DefaultScreen")}
             activeOpacity={0.8}
           >
             <Image
@@ -143,6 +204,12 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#212121",
     paddingBottom: 15,
+  },
+  mainContentWrapper: {
+    position: "relative",
+    alignItems: "center",
+    paddingTop: 35,
+    backgroundColor: "#FFFFFF",
   },
   postWrapper: {
     marginTop: 15,
